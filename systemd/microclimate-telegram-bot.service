@@ -1,0 +1,15 @@
+[Unit]
+Description=Microclimate Telegram Bot
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/root/microclimate
+ExecStart=/home/root/microclimate/.venv/bin/python /home/root/microclimate/src/telegram_bot.py
+Restart=always
+RestartSec=10
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target
