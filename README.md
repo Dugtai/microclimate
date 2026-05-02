@@ -16,7 +16,8 @@
 - после этого была выполнена модернизация освещения;
 - разработан автономный стенд мониторинга;
 - реализована передача данных пользователю через Telegram и VK;
-- настроен автозапуск программной части на Linux.
+- настроен автозапуск программной части на Linux;
+- добавлены механизмы логирования, локального мониторинга и контроля отклонений.
 
 ## Что измеряет система
 
@@ -48,7 +49,21 @@
 - VK API и Long Poll API;
 - I2C;
 - HTTP/JSON;
+- CSV-логирование;
+- NetworkManager/nmcli;
 - GitHub для публикации проекта и портфолио.
+
+## Основные программные модули
+
+- `src/microclimate_core.py` — чтение показаний, анализ и форматирование сообщений;
+- `src/thresholds.py` — условные пороговые значения и рекомендации;
+- `src/telegram_bot_full.py` — расширенный Telegram-бот;
+- `src/vk_bot_full.py` — расширенный VK-бот;
+- `src/data_logger.py` — запись измерений в CSV;
+- `src/display_monitor.py` — вывод показаний на экран/LCD в демонстрационном режиме;
+- `src/console_monitor.py` — консольный монитор;
+- `src/alert_monitor.py` — контроль отклонений с подтверждением нескольких измерений;
+- `src/alert_daemon.py` — фоновая заготовка для уведомлений.
 
 ## Возможности ботов
 
@@ -61,6 +76,7 @@ Telegram-бот и VK-бот позволяют получать данные у
 /light        — освещённость
 /air          — качество воздуха
 /pressure     — давление
+/noise        — уровень шума
 /help         — справка
 ```
 
@@ -82,7 +98,9 @@ Telegram-бот и VK-бот позволяют получать данные у
    ├── сбор данных
    ├── фильтрация значений
    ├── сравнение с порогами
+   ├── запись истории в CSV
    ├── вывод на LCD-дисплей
+   ├── контроль отклонений
    └── отправка уведомлений
    │
    ├── Telegram Bot API
@@ -100,20 +118,48 @@ microclimate/
 ├── requirements.txt
 ├── .gitignore
 ├── .env.example
+├── config/
+│   └── sensors.example.json
 ├── src/
+│   ├── microclimate_core.py
+│   ├── thresholds.py
 │   ├── sensors_live.py
 │   ├── telegram_bot.py
-│   └── vk_bot.py
+│   ├── telegram_bot_full.py
+│   ├── vk_bot.py
+│   ├── vk_bot_full.py
+│   ├── data_logger.py
+│   ├── display_monitor.py
+│   ├── console_monitor.py
+│   ├── alert_monitor.py
+│   └── alert_daemon.py
+├── scripts/
+│   ├── install.sh
+│   ├── install-project.sh
+│   ├── diagnostics.sh
+│   ├── wifi-connect.sh
+│   ├── wifi-priority-template.sh
+│   ├── restart-bots-on-network.sh
+│   └── NetworkManager-dispatcher-template.sh
 ├── systemd/
 │   ├── microclimate-telegram-bot.service
-│   └── microclimate-vk-bot.service
+│   ├── microclimate-vk-bot.service
+│   ├── microclimate-telegram-bot-full.service
+│   ├── microclimate-vk-bot-full.service
+│   ├── microclimate-console-monitor.service
+│   ├── microclimate-display-monitor.service
+│   ├── microclimate-data-logger.service
+│   └── microclimate-alert-monitor.service
 ├── docs/
 │   ├── project_description.md
 │   ├── hardware.md
 │   ├── software_setup.md
+│   ├── system_automation.md
+│   ├── deployment_on_stand.md
 │   ├── troubleshooting.md
 │   ├── research_results.md
 │   ├── bot_commands.md
+│   ├── scripts_overview.md
 │   ├── npk_materials.md
 │   └── conference_result.md
 └── media/
@@ -125,24 +171,49 @@ microclimate/
 ```bash
 git clone https://github.com/Dugtai/microclimate.git
 cd microclimate
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-cp .env.example .env
+bash scripts/install.sh
 ```
 
 После этого необходимо заполнить `.env` реальными токенами Telegram и VK.
 
-Запуск Telegram-бота:
+Запуск расширенного Telegram-бота:
 
 ```bash
-python src/telegram_bot.py
+python src/telegram_bot_full.py
 ```
 
-Запуск VK-бота:
+Запуск расширенного VK-бота:
 
 ```bash
-python src/vk_bot.py
+python src/vk_bot_full.py
+```
+
+Запуск логирования истории измерений:
+
+```bash
+python src/data_logger.py
+```
+
+Запуск локального монитора:
+
+```bash
+python src/console_monitor.py
+```
+
+## Развёртывание на стенде
+
+Подробная инструкция находится в `docs/deployment_on_stand.md`.
+
+Для диагностики:
+
+```bash
+bash scripts/diagnostics.sh
+```
+
+Для настройки приоритетов Wi‑Fi используется шаблон:
+
+```bash
+bash scripts/wifi-priority-template.sh
 ```
 
 ## Безопасность публикации
@@ -150,6 +221,7 @@ python src/vk_bot.py
 В репозиторий не добавляются:
 
 - реальные токены Telegram и VK;
+- пароли Wi‑Fi;
 - закрытые ключи;
 - MAC-адреса устройств;
 - приватные IP-адреса школьной сети;
