@@ -1,0 +1,43 @@
+{
+  "project": {
+    "name": "Микроклимат кабинета",
+    "mode": "demo",
+    "location": "school_classroom"
+  },
+  "monitoring": {
+    "read_interval_seconds": 5,
+    "alert_confirm_count": 2,
+    "csv_log_path": "data/microclimate.csv"
+  },
+  "thresholds": {
+    "temperature_c": {
+      "min": 20.0,
+      "max": 24.0,
+      "unit": "°C"
+    },
+    "humidity_percent": {
+      "min": 30.0,
+      "max": 60.0,
+      "unit": "%"
+    },
+    "light_lux": {
+      "min": 200.0,
+      "max": 500.0,
+      "unit": "лк"
+    },
+    "air_quality": {
+      "min": 0.0,
+      "max": 0.6,
+      "unit": "усл."
+    },
+    "noise_level": {
+      "min": 0.0,
+      "max": 60.0,
+      "unit": "усл."
+    }
+  },
+  "network": {
+    "interface": "wlan0",
+    "ping_host": "8.8.8.8"
+  }
+}
