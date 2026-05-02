@@ -1,0 +1,17 @@
+[Unit]
+Description=Microclimate Alert Monitor
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/root/microclimate
+ExecStart=/home/root/microclimate/.venv/bin/python /home/root/microclimate/src/alert_monitor.py
+Restart=always
+RestartSec=10
+Environment=PYTHONUNBUFFERED=1
+Environment=ALERT_INTERVAL_SECONDS=10
+Environment=ALERT_CONFIRM_COUNT=2
+
+[Install]
+WantedBy=multi-user.target
