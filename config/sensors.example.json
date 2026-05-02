@@ -1,0 +1,35 @@
+{
+  "stand_name": "Микроклимат кабинета",
+  "demo_mode": true,
+  "read_interval_seconds": 5,
+  "alert_cooldown_seconds": 300,
+  "i2c_bus": 1,
+  "sensors": {
+    "bme280": {
+      "enabled": true,
+      "i2c_address": "0x76",
+      "measures": ["temperature_c", "humidity_percent", "pressure_hpa"]
+    },
+    "bh1750": {
+      "enabled": true,
+      "i2c_address": "0x23",
+      "measures": ["light_lux"]
+    },
+    "mq135": {
+      "enabled": true,
+      "adc_channel": 0,
+      "measures": ["air_quality"]
+    },
+    "max4466": {
+      "enabled": true,
+      "adc_channel": 1,
+      "measures": ["noise_level"]
+    },
+    "lcd": {
+      "enabled": true,
+      "i2c_address": "0x27",
+      "columns": 16,
+      "rows": 2
+    }
+  }
+}
