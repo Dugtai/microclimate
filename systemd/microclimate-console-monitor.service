@@ -1,0 +1,16 @@
+[Unit]
+Description=Microclimate Console Monitor
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/root/microclimate
+ExecStart=/home/root/microclimate/.venv/bin/python /home/root/microclimate/src/console_monitor.py
+Restart=always
+RestartSec=10
+Environment=PYTHONUNBUFFERED=1
+Environment=MONITOR_INTERVAL_SECONDS=5
+
+[Install]
+WantedBy=multi-user.target
